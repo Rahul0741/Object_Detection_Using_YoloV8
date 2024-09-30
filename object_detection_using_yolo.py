@@ -205,61 +205,8 @@ with sv.VideoSink(TARGET_VIDEO_PATH, video_info) as sink:
         # Add frame to target video
         sink.write_frame(annotated_frame)
 
+#to develop a simple interface to play the video generated
 !pip install gradio
-
-import gradio as gr
-import cv2
-import tempfile
-import shutil
-
-# Function to play video
-def play_video(video_file):
-    # OpenCV to read the video
-    cap = cv2.VideoCapture(video_file)
-
-    # Check if video opened successfully
-    if not cap.isOpened():
-        return "Error: Could not open video."
-
-    # Get video properties
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    # Temporary directory to save frames
-    temp_dir = tempfile.mkdtemp()
-
-    frame_list = []
-    frame_num = 0
-
-    # Read until video is completed
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if ret:
-            # Save frame as image file
-            frame_path = f"{temp_dir}/frame_{frame_num:04d}.png"
-            cv2.imwrite(frame_path, frame)
-            frame_list.append(frame_path)
-            frame_num += 1
-        else:
-            break
-
-    # Release the video capture object
-    cap.release()
-
-    return gr.update(video=frame_list, fps=fps)
-
-# Create Gradio interface
-interface = gr.Interface(
-    fn=play_video,
-    inputs=gr.Video('traffic2.mp4'),
-    outputs=gr.Video('result.mp4'),
-    title="Video Player",
-    description="Result:"
-)
-
-# Launch the interface
-interface.launch()
 
 import gradio as gr
 import cv2
